@@ -7,7 +7,7 @@ dotenv.config({
     path:"./env"
 })
 
-const Register = async (req, res) => {
+export const Register = async (req, res) => {
 
     const {email, password ,name} = req.body;
 
@@ -54,7 +54,7 @@ const Register = async (req, res) => {
 
     
 
-    res.cookie("jwt",token,{        //we are giving res a superpower of cookie //install cookie-parser
+    res.cookie("jwt",token,{      //we are giving res a superpower of cookie //install cookie-parser
     
             httpOnly:true, //only accesible through http js
             sameSite:"strict", //only accessible when the website opens not when other website redirects to this
@@ -82,7 +82,7 @@ const Register = async (req, res) => {
     }
 }
 
-const login = async(req,res)=>{
+export const login = async(req,res)=>{
     const {email ,passowrd} = req.body;
 
 
@@ -150,7 +150,7 @@ const login = async(req,res)=>{
     }
 }
 
-const logout = async(req,res)=>{
+export const logout = async(req,res)=>{
     try {
         res.clearCookie("jwt",{
             httpOnly:true,
@@ -167,6 +167,24 @@ const logout = async(req,res)=>{
         console.error("errro logging out the user:",error)
         res.status(500).json({
             error:"error logging out the user"
+        })
+    }
+}
+
+//can add accesstoken and logic later //if we are not using auth
+
+
+export const check = async(req,res)=>{
+    try {
+        res.status(200).json({
+            success:true,
+            message:"User authenticated successfully",
+            user:req.user
+        })
+    } catch (error) {
+        console.error("Error checking user:", error);
+        res.status(500).json({
+            error:"Error checking user"
         })
     }
 }
