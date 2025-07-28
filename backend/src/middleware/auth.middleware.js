@@ -8,7 +8,7 @@ export const authMiddleware = async(req,res,next)=>{
 
         if(!token){
             return res.status(401).json({
-                messgae:"unauthorized person"
+                message:"unauthorized person"
             })
         }
 
@@ -17,7 +17,7 @@ export const authMiddleware = async(req,res,next)=>{
             decoded = jwt.verify(token,process.env.JWT_SECRET)
         } catch (error) {
             return res.status(401).json({
-                messgae:"unauthorized -Invalid token"
+                message:"unauthorized -Invalid token"
             })
         }
 
