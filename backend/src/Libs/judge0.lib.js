@@ -20,3 +20,28 @@ export const submitBatch = async(submissions)=>{
 
     return data // data will return in the form od array [{token1},{token2},{token3}] //depending the language intake
 }
+
+
+const sleep =(ms)=> new Promise((resolve)=>setTimeout(resolve,ms))
+
+export const pollBatchResults =async(tokens)=>{
+    while(true){
+        const {data} = await axios.get(`${process.env.JUDGE0_API_URL}/submisiions/batch`,{
+            params:{
+                tokens:tokens.join(","),
+                base64_endoded:false
+            }
+        })
+        
+        //we get this submission when we hit the above end point
+        const results = data.submissions;
+
+        const isAlldone = results.every(
+            (r)=>r.status.id !== 1 && r.status.id !==2
+        )
+
+
+        if(isAlldone) return results
+        await sleep(1000)
+    }
+}

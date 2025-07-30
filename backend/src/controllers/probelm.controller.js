@@ -1,5 +1,5 @@
 import { db } from "../Libs/db.js"
-import { getlanguageId, submitBatch } from "../Libs/judge0.lib.js";
+import { getlanguageId, pollBatchResults, submitBatch } from "../Libs/judge0.lib.js";
 
 export const createProblem=async(req,res)=>{
     //get all data from req body
@@ -37,7 +37,36 @@ export const createProblem=async(req,res)=>{
                 }))
 
 
-                const submissionBatch = await submitBatch(submissions)
+                const submissionResults= await submitBatch(submissions)
+
+
+                const tokens = submissionResults.map((res)=>res.token)
+
+                const result =await pollBatchResults(tokens)
+
+                for(let i = 0;i<result.length;i++){
+                    const result = result[i];
+
+
+
+                    if(result.status.id !== 3){
+                        return res.status(400).josn({
+                            error:`Testcase ${i+1} failed for langauge ${language}`
+                        })
+                    }
+                }
+
+                const newProblem = await db.problem.create({
+                    data:{  tittle, description, diificulty, tags ,examples ,constraints ,testcases ,codeSnippets,
+                        referenceSolutions,userId:req.user.id
+
+                    }
+                })
+
+                return res.status(201).json({
+                    message:"Problem created successfully",
+                    problem:newProblem
+                })
             }
         } catch (error) {
             
