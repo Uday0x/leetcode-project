@@ -1,5 +1,5 @@
 import { db } from "../Libs/db.js"
-import { getlanguageId } from "../Libs/judge0.lib.js";
+import { getlanguageId, submitBatch } from "../Libs/judge0.lib.js";
 
 export const createProblem=async(req,res)=>{
     //get all data from req body
@@ -35,6 +35,9 @@ export const createProblem=async(req,res)=>{
                     stdin:input,
                     expected_output:output,
                 }))
+
+
+                const submissionBatch = await submitBatch(submissions)
             }
         } catch (error) {
             

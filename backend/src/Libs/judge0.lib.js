@@ -12,5 +12,11 @@ export const getlanguageId =(language)=>{
 }
 
 export const submitBatch = async(submissions)=>{
-    const {data} = await axios.post()
+    const {data} = await axios.post(`${process.env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`,{
+        submissions
+        })
+
+    console.log("submisiion results",data)
+
+    return data // data will return in the form od array [{token1},{token2},{token3}] //depending the language intake
 }
