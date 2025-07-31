@@ -74,7 +74,27 @@ export const createProblem=async(req,res)=>{
 }
 
 export const getAllproblems=async(req,res)=>{
+    const problems = await db.problem.findMany() //will write the logic if logged user should get or etc
+
+
+    //validation
+    try {
+        if(!problems){
+             return res.status(404).json({
+                        message:"Problems not found",
+                    })
+        }
     
+         return res.status(201).json({
+                        message:"Problems fetched succesfully",
+                        problems
+                    })
+    } catch (error) {
+
+                return res.status(500).json({
+                    message:"Something wrong in fecthing the all problems",
+                })
+    }
 }
 export const getProblemById=async(req,res)=>{
 
