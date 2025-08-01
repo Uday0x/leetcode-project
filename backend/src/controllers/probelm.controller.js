@@ -153,17 +153,47 @@ export const updateProblemById = async (req, res) => {
             }
         })
 
-         return res.status(201).json({
-                message: "updated the problem sucessfully",
-                updateProblem
-            })
+        return res.status(201).json({
+            message: "updated the problem sucessfully",
+            updateProblem
+        })
     } catch (error) {
-         return res.status(500).json({
-                message: "Cannot update the problem"
-            })
+        return res.status(500).json({
+            message: "Cannot update the problem"
+        })
     }
 }
 export const deleteProblem = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+
+        if (!id) {
+            return res.status(404).json({
+                message: "Plz give valid problem id"
+            })
+        }
+
+        const problem = await db.problem.findUnique({ where: { id } })
+        if (!problem) {
+            return res.status(404).json({
+                message: "Cannot find problem based on teh given Id"
+            })
+        }
+
+        await db.problem.delete({ where: { id } })
+
+
+        return res.status(201).json({
+            message: `Deleted the problem of referance ID ${id}`
+        })
+    } catch (error) {
+
+        return res.status(404).json({
+            message: "Delete was not successful"
+        })
+
+    }
 
 }
 export const getSolvedProblems = async (req, res) => {
