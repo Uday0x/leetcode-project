@@ -88,7 +88,50 @@ model Problem {
 
     user User @relation(fields:[userId],references:[id],onDelete:Cascade)
     problem Problem @relation(fields:[problemId],references:[id],onDelete:Cascade)
+    problemSolved ProblemSolved[] 
 
   
   }
 
+
+model TestCaseResult {
+   id String @id @default(uuid())
+   submissionId String
+   testcase Int 
+   passed Boolean
+   stdout String?
+   expected String?
+   stderr String?
+   complieOutput String?
+   status String
+   memory String?
+   time String?
+
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+   submission Submission @relation(fields: [submissionId],references:[id],onDelete:Cascade)
+
+   @@index([submissionId]) //for better search 
+}
+
+
+
+//model name always in camel case
+//if the data is in problem solved then it should have all the follwoing fields
+
+
+model ProblemSolved {
+  id String @id @default(uuid())
+  userId String
+  problemId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields:[userId], references:[id],onDelete:Cascade)
+  user Problem @relation(fields:[problemId], references:[id],onDelete:Cascade)
+
+
+  @@unique([userId,problemId])
+}
