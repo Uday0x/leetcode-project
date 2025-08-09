@@ -7,10 +7,13 @@ dotenv.config({
     path:"./env"
 })
 
-export const Register = async (req, res) => {
+import jwt from "jsonwebtoken";
+
+export const register = async (req, res) => {
 
     const {email, password ,name} = req.body;
-
+    
+    console.log("passed this?")
 
     try {
         //can also validate using a middleware
@@ -21,20 +24,22 @@ export const Register = async (req, res) => {
             })  
         }
 
+        console.log("passed the validatiosn")
+
         const extistingUser = await db.User.findUnique({
             where:{
                 email
             }
         })
         if(extistingUser){
-            return res.status(200).josn({
+            return res.status(200).json({
                 message:"user already exists"
             })
         }
 
-        const hashedPassword = await bcrypt.hash(password,10)
+        const hashedPassword = await bcrypt.hash(String(password),10)
 
-        const newUser = await db.user.create({
+        const newUser = await db.User.create({
             data:{
                 email,
                 password:hashedPassword,

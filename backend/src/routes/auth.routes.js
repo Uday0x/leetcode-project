@@ -8,7 +8,7 @@ const authRoutes = express.Router();
 
 authRoutes.post("/register" , register)
 
-authRoutes.post("/login" , login)
+authRoutes.get("/login" , login)
 
 authRoutes.post("/logout" ,authMiddleware ,  logout)
 
