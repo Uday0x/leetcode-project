@@ -10,7 +10,7 @@ authRoutes.post("/register" , register)
 
 authRoutes.get("/login" , login)
 
-authRoutes.post("/logout" ,authMiddleware ,  logout)
+authRoutes.get("/logout" ,authMiddleware ,  logout)
 
 authRoutes.get("/check" ,authMiddleware ,  check)
 

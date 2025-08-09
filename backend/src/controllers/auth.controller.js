@@ -88,12 +88,12 @@ export const register = async (req, res) => {
 }
 
 export const login = async(req,res)=>{
-    const {email ,passowrd} = req.body;
+    const {email ,password} = req.body;
 
 
-    if(!email || !passowrd){
-        return res.status(200).josn({
-            message:"email and passowrd is required"
+    if(!email || !password){
+        return res.status(200).json({
+            message:"email and password is required"
         })
     }
 
@@ -103,15 +103,16 @@ export const login = async(req,res)=>{
                 email
             }
         })
-
+        console.log("User found:", user)
         if(!user){
-            return res.status(200).josn({
+            return res.status(200).json({
                 message:"user doesnt exist"
             })
         }
+        console.log("user is not found")
 
-        const isMatch = await bcrypt.compare(passowrd,user.passowrd);
-
+        const isMatch = await bcrypt.compare(password,user.password);
+        console.log("Matched the passowrd")
         if(!isMatch){
             return res.status(200).josn({
                 message:"Invalid credentials"
