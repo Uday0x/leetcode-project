@@ -45,12 +45,12 @@ model Problem {
   id          String     @id @default(uuid())
   tittle      String
   description String
-  diificulty  Difficulty
+  difficulty  Difficulty
   tags        String[]
   userId      String
   examples    Json
   constraints String
-  hints       String
+  hints       String?
   editorail   String?
 
   testcases          Json

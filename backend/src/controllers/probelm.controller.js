@@ -3,12 +3,14 @@ import { getlanguageId, pollBatchResults, submitBatch } from "../Libs/judge0.lib
 
 export const createProblem = async (req, res) => {
     //get all data from req body
-    const { tittle, description, diificulty, tags, examples, constraints, testcases, codeSnippets, referenceSolutions } = req.body;
+    const { tittle, description, difficulty, tags, examples, constraints, testcases, codeSnippets, referenceSolutions } = req.body;
 
     //validate if the user role is admin //just for the safe play
-    if (req.user.role !== 'admin') {
+    console.log(req.user.role)
+    if (req.user.role != 'ADMIN') {
         return res.status(403).json({ message: "Access denied. Admins only." });
     }
+
     //keep an eye on how r u writing the messages these need to be  handled in the frontend
 
 
@@ -20,57 +22,75 @@ export const createProblem = async (req, res) => {
 
     try {
         for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
-            const langaugeId = getlanguageId(language)
+            const languageId = getlanguageId(language)
 
 
-            if (!langaugeId) {
+            if (!languageId) {
                 return res.status(400).json({
                     error: `Language ${language}is not supported`
                 })
             }
+            console.log("passed the language ID?")
 
             const submissions = testcases.map(({ input, output }) => ({
                 source_code: solutionCode,
-                langauge_id: langaugeId,
+                language_id: languageId,
                 stdin: input,
-                expected_output: output,
+                expected_output: output ? `${output}\n` : undefined,
             }))
+
+            console.log("Passed the submission", submissions)
 
 
             const submissionResults = await submitBatch(submissions)
-
+            console.log("submission results", submissionResults)
 
             const tokens = submissionResults.map((res) => res.token)
+            console.log("tokens", tokens)
 
-            const result = await pollBatchResults(tokens)
-
-            for (let i = 0; i < result.length; i++) {
-                const result = result[i];
-
+            const results = await pollBatchResults(tokens)
+            console.log("result", results)
 
 
+            for (let i = 0; i < results.length; i++) {
+                const result = results[i];
+                console.log("Result-----", result);
+                // console.log(
+                //   `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
+                // );
                 if (result.status.id !== 3) {
-                    return res.status(400).josn({
-                        error: `Testcase ${i + 1} failed for langauge ${language}`
-                    })
+                    return res.status(400).json({
+                        error: `Testcase ${i + 1} failed for language ${language}`,
+                    });
                 }
             }
 
+
+            console.log("reached here??")
             const newProblem = await db.problem.create({
                 data: {
-                    tittle, description, diificulty, tags, examples, constraints, testcases, codeSnippets,
-                    referenceSolutions, userId: req.user.id
-
-                }
-            })
-
+                    tittle,
+                    description,
+                    difficulty,
+                    tags,
+                    examples,
+                    constraints,
+                    testcases,
+                    codeSnippets,
+                    referenceSolutions,
+                    userId: req.user.id,
+                },
+            });
+            console.log("stuck here or tw?")
             return res.status(201).json({
                 message: "Problem created successfully",
                 problem: newProblem
             })
         }
     } catch (error) {
-
+        return res.status(500).json({
+            message: "Something wrong in craeting the problem",
+        })
     }
 }
 
