@@ -81,15 +81,16 @@ export const createProblem = async (req, res) => {
                     userId: req.user.id,
                 },
             });
-            console.log("stuck here or tw?")
+            console.log("stuck here or wt?")
             return res.status(201).json({
                 message: "Problem created successfully",
                 problem: newProblem
             })
         }
     } catch (error) {
+        console.error("DB Create Error:", error);
         return res.status(500).json({
-            message: "Something wrong in craeting the problem",
+            message: "Something wrong in creating the problem",
         })
     }
 }
@@ -145,13 +146,17 @@ export const getProblemById = async (req, res) => {
 }
 export const updateProblemById = async (req, res) => {
     const { id } = req.params
+    
+    const { tittle, description, difficulty, tags, examples, constraints, testcases, codeSnippets, referenceSolutions } = req.body;
 
+    console.log("got the id")
     try {
         if (!id) {
             return res.status(404).json({
                 message: "Plz give valid problem id"
             })
         }
+        console.log("passed the id test",id)
 
         const problem = await db.problem.findUnique({
             where: {
@@ -159,25 +164,31 @@ export const updateProblemById = async (req, res) => {
             }
         })
 
+        console.log("found the problem",problem)
+
         if (!problem) {
             return res.status(404).json({
                 message: "Cannot find problem based on the given ID"
             })
         }
 
+        console.log("before updating")
         const updateProblem = await db.problem.update({
+            where: { id },
             data: {
-                tittle, description, diificulty, tags, examples, constraints, testcases, codeSnippets,
+                tittle, description, difficulty, tags, examples, constraints, testcases, codeSnippets,
                 referenceSolutions, userId: req.user.id
 
             }
         })
+        console.log("not passing the update problem state")
 
         return res.status(201).json({
             message: "updated the problem sucessfully",
             updateProblem
         })
     } catch (error) {
+        console.error(error)
         return res.status(500).json({
             message: "Cannot update the problem"
         })
